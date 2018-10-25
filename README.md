@@ -9,3 +9,8 @@ String frequency manager.
 # How to run
 1. execute run.sh or mvn spring-boot:run
 
+# Basic Testing
+It has a mapdb embedded database at location src/main/resources/db/WordRegister24Hours.db . After successfully running the application, for initial testing can call http://localhost:8080/isStringValid?string=never response will be {"response":"true"} , as the word "never" did not occur. http://localhost:8080/isStringValid?string=always for this response will be {"response":"false"} , as it has more than 5 occurrences witin last 24 hours.
+
+To start fresh can stop the application delete file src/main/resources/db/WordRegister24Hours.db and play around.
+
