@@ -26,28 +26,4 @@ public class SFMApplication {
         SpringApplication.run(SFMApplication.class, args);
     }
 
-
-
-	@Bean
-	public MessageChannel fileInputChannel(){
-		return new DirectChannel();
-	}
-
-
-	/*
-	@Bean
-	@InboundChannelAdapter(value="fileInputChannel", poller=@Poller(fixedDelay = "10000"))
-	public FileReadingMessageSource fileReadingMessageSource(){
-		FileReadingMessageSource source = new FileReadingMessageSource();
-		source.setDirectory(new File(folder));
-		source.setFilter(new SimplePatternFileListFilter(filePattern));
-		return source;
-	}
-	*/
-
-	@Bean
-    public IntegrationFlow fileReadingFlow(){
-//	    return IntegrationFlows.from
-        return null;
-    }
 }

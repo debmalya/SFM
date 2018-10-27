@@ -62,27 +62,7 @@ public class SfmApplicationTests {
             occurrences[i] = System.currentTimeMillis();
         }
         wordRegister24Hours.getWordRegister24HoursMap().put(existingWord,occurrences);
-        /*
-        String fileSuffix = yyyyMMddhh.format(new Date());
-        fileName = configurationComponent.getFolder()+File.separator+"string-generation-"+fileSuffix+".log";
-        try(PrintWriter writer = new PrintWriter(new File(fileName))){
-            int i = 0;
-            StringBuilder sb = new StringBuilder(String.valueOf(epochTimeMilliSeconds));
-            sb.append(",");
-            while (i <= configurationComponent.getWordCount()){
-                sb.append(existingWord);
-                sb.append(" ");
-                i++;
-            }
-            Thread.sleep(5000);
 
-
-        }catch(IOException ioe){
-            logger.log(Level.SEVERE,ioe.getMessage(),ioe);
-        } catch (InterruptedException e) {
-            logger.log(Level.SEVERE,e.getMessage(),e);
-        }
-         */
     }
 
     @After
