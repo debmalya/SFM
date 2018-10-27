@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Repository
@@ -34,6 +35,11 @@ public class WordRegister24Hours {
                 .valueLoader(s -> new long[configurationService.getWordCount() + 1])
                 .expireAfterCreate(24, TimeUnit.HOURS)
                 .expireAfterUpdate(24, TimeUnit.HOURS)
+                .expireAfterGet(24, TimeUnit.HOURS)
+                // Entry expiration in 3 background threds
+                .expireExecutor(Executors.newScheduledThreadPool(3))
+                // trigger space compact if 40% of space is free
+                .expireCompactThreshold(0.4)
                 .createOrOpen();
 
     }
@@ -47,7 +53,9 @@ public class WordRegister24Hours {
         return wordRegister24HoursMap;
     }
 
+    /*
     public void setWordRegister24HoursMap(HTreeMap<String, long[]> wordRegister24HoursMap) {
         this.wordRegister24HoursMap = wordRegister24HoursMap;
     }
+    */
 }

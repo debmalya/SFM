@@ -6,9 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 public class SFMServiceImpl implements SFMService {
+
+    private static Logger logger = Logger.getLogger("SFMServiceImpl");
+    
+    /**
+     * Number of milliseconds in a day.
+     */
+    private static final long ONE_DAY_BEFORE = 86400000L;
 
     @Autowired
     private WordRegister24Hours wordRegister24Hours;
@@ -22,9 +31,12 @@ public class SFMServiceImpl implements SFMService {
     public boolean isValidString(String word) {
         long[] timestamps = wordRegister24Hours.getWordRegister24HoursMap().get(word);
         long currentTimeStamp = System.currentTimeMillis();
-        long oneDayBefore = currentTimeStamp - 24 * 60 * 600000;
+        long oneDayBefore = currentTimeStamp - ONE_DAY_BEFORE;
 
-        return (Arrays.stream(timestamps).anyMatch(timestamp -> timestamp < oneDayBefore));
+        logger.log(Level.INFO,String.format("Before 24 hours %d", oneDayBefore));
+        logger.log(Level.INFO,String.format("Word : %s and occurrences %s",word,Arrays.toString(timestamps)));
+
+        return (Arrays.stream(timestamps).parallel().anyMatch(timestamp -> timestamp < oneDayBefore));
 
     }
 }

@@ -5,20 +5,15 @@ import org.apache.http.HttpStatus;
 import org.deb.SFM.config.ConfigurationComponent;
 import org.deb.SFM.repository.WordRegister24Hours;
 import org.deb.SFM.service.SFMService;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.equalTo;
@@ -31,16 +26,10 @@ import static org.hamcrest.Matchers.is;
 )
 public class SfmApplicationTests {
 
-
-    private static String fileName;
-
     private static String existingWord = "ExistingWord";
 
     private static String nonExistingWord = "NonExistingWord";
 
-    private static final Logger logger = Logger.getLogger("SpringBootTest");
-
-    private static final SimpleDateFormat yyyyMMddhh = new SimpleDateFormat("yyyyMMddhh");
 
     @Autowired
     private  ConfigurationComponent configurationComponent;
@@ -67,13 +56,7 @@ public class SfmApplicationTests {
 
     @After
     public void clean(){
-        /*
-        File file = new File(fileName);
-        if (file.exists()) {
-            file.delete();
-            logger.log(Level.INFO,fileName+" deleted successfully");
-        }
-        */
+
     }
 
 

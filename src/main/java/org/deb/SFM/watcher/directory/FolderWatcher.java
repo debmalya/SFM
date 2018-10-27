@@ -59,8 +59,7 @@ public class FolderWatcher {
                     pattern = Pattern.compile(config.getPattern());
                     for (WatchEvent<?> event : key.pollEvents()) {
                         logger.log(Level.INFO,
-                                "Event kind:" + event.kind()
-                                        + ". File affected: " + event.context() + ".");
+                                String.format("Event kind: %s , file affected: %s"  , event.kind(),event.context()));
                         String onlyFileName = event.context().toString();
                         if (pattern.matcher(onlyFileName).find() && onlyFileName.endsWith(".log")) {
                             try (BufferedReader bufferedLogReader = Files.newBufferedReader(Paths.get(config.getFolder() + File.separator + onlyFileName))) {
