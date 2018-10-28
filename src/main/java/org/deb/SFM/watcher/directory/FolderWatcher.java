@@ -45,10 +45,14 @@ public class FolderWatcher {
 
 	@Scheduled(fixedRate = 1000)
 	public void watch() {
+		String onlyFileName = "";
+		int arrayLength = config.getWordCount();
+		String fileExtension = config.getExtension();
 
 		try {
 
 			Path dir = Paths.get(config.getFolder());
+			
 			if (dir != null) {
 				WatchKey key = dir.register(watcher, ENTRY_CREATE);
 
@@ -56,43 +60,14 @@ public class FolderWatcher {
 					pattern = Pattern.compile(config.getPattern());
 					long startTime = System.currentTimeMillis();
 
-					int arrayLength = config.getWordCount();
+					
+					
 
 					for (WatchEvent<?> event : key.pollEvents()) {
 						logger.log(Level.INFO,
 								String.format("Event kind: %s , file affected: %s", event.kind(), event.context()));
-						String onlyFileName = event.context().toString();
-						if (pattern.matcher(onlyFileName).find() && onlyFileName.endsWith(".log")) {
-							try (BufferedReader bufferedLogReader = Files
-									.newBufferedReader(Paths.get(config.getFolder() + File.separator + onlyFileName))) {
-
-								bufferedLogReader.lines().forEach(e -> {
-
-									String[] fieldValues = e.split(",");
-									long epochTimeStampMillis = Long.parseLong(fieldValues[0]);
-
-									String[] words = fieldValues[1].split("\\s");
-									Arrays.stream(words).forEach(eachWord -> {
-										if (eachWord.length() > 0) {
-											long[] occurrences = wordRegister24Hours.getWordRegister24HoursMap()
-													.get(eachWord);
-
-											for (int i = 0; i < occurrences.length - 1; i++) {
-												occurrences[i] = occurrences[i + 1];
-											}
-
-											occurrences[arrayLength] = epochTimeStampMillis;
-
-											wordRegister24Hours.getWordRegister24HoursMap().put(eachWord, occurrences);
-//											logger.log(Level.INFO, String.format("Word %s and occurrences %s", eachWord,
-//													Arrays.toString(occurrences)));
-
-										}
-									});
-								});
-
-							}
-						}
+						onlyFileName = event.context().toString();
+						processEachFile(arrayLength, onlyFileName, fileExtension);
 					}
 					key.reset();
 					logger.log(Level.INFO, String.format("Completed processing, took %d milliseconds.",
@@ -100,9 +75,59 @@ public class FolderWatcher {
 				}
 			}
 		} catch (IOException | InterruptedException e) {
+			int retryCount = 0;
+			int retryLimit = 3;
+			while (retryCount < retryLimit){
+				try {
+					processEachFile(arrayLength, onlyFileName, fileExtension);
+					break;
+				} catch (IOException e1) {
+					logger.log(Level.SEVERE, String.format("Retrying... %s", e.getMessage()), e);
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e2) {
+						logger.log(Level.SEVERE, String.format("Retrying... %s", e.getMessage()), e);
+					}
+				}
+				retryCount++;
+			}
 			logger.log(Level.SEVERE, e.getMessage(), e);
 		}
 
+	}
+
+	private void processEachFile(int arrayLength, String onlyFileName, String fileExtension) throws IOException {
+		if (pattern.matcher(onlyFileName).find() && onlyFileName.endsWith(fileExtension)) {
+			try (BufferedReader bufferedLogReader = Files
+					.newBufferedReader(Paths.get(config.getFolder() + File.separator + onlyFileName))) {
+
+				bufferedLogReader.lines().forEach(e -> {
+
+					String[] fieldValues = e.split(",");
+					long epochTimeStampMillis = Long.parseLong(fieldValues[0]);
+
+					String[] words = fieldValues[1].split("\\s");
+					Arrays.stream(words).forEach(eachWord -> {
+						if (eachWord.length() > 0) {
+							long[] occurrences = wordRegister24Hours.getWordRegister24HoursMap().get(eachWord);
+
+							for (int i = 0; i < occurrences.length - 1; i++) {
+								occurrences[i] = occurrences[i + 1];
+							}
+
+							occurrences[arrayLength] = epochTimeStampMillis;
+
+							wordRegister24Hours.getWordRegister24HoursMap().put(eachWord, occurrences);
+							// logger.log(Level.INFO, String.format("Word %s and
+							// occurrences %s", eachWord,
+							// Arrays.toString(occurrences)));
+
+						}
+					});
+				});
+
+			}
+		}
 	}
 
 }
