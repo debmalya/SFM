@@ -20,6 +20,6 @@ String frequency manager.
 ## file extension
 * sfm.extension=.log
 
-## more than below number of occurrences within last 24 hours will make it invalid.
+## more than below number of occurrences within last 24 hours will make it valid.
 * sfm.wordCount=5
 
