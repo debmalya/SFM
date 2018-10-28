@@ -8,4 +8,18 @@ String frequency manager.
 
 # How to run
 1. execute run.sh or mvn spring-boot:run
-2. Store log files in the specified format and the folder configured in application.properties
+
+
+# Configuration
+## folder to be watched
+* sfm.folder=./src/test/resources/logs
+
+## file name pattern
+* sfm.pattern=string-generation-[0-9]+.log
+
+## file extension
+* sfm.extension=.log
+
+## more than below number of occurrences within last 24 hours will make it invalid.
+* sfm.wordCount=5
+
