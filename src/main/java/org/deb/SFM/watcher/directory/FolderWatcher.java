@@ -48,20 +48,18 @@ public class FolderWatcher {
 		String onlyFileName = "";
 		int arrayLength = config.getWordCount();
 		String fileExtension = config.getExtension();
+		pattern = Pattern.compile(config.getPattern());
 
 		try {
 
 			Path dir = Paths.get(config.getFolder());
-			
+
 			if (dir != null) {
 				WatchKey key = dir.register(watcher, ENTRY_CREATE);
 
 				if (null != (key = watcher.take())) {
-					pattern = Pattern.compile(config.getPattern());
-					long startTime = System.currentTimeMillis();
 
-					
-					
+					long startTime = System.currentTimeMillis();
 
 					for (WatchEvent<?> event : key.pollEvents()) {
 						logger.log(Level.INFO,
@@ -77,9 +75,14 @@ public class FolderWatcher {
 		} catch (IOException | InterruptedException e) {
 			int retryCount = 0;
 			int retryLimit = 3;
-			while (retryCount < retryLimit){
+			boolean isOK = false;
+			logger.log(Level.SEVERE, e.getMessage(), e);
+			while (retryCount < retryLimit) {
 				try {
-					processEachFile(arrayLength, onlyFileName, fileExtension);
+					if (!"".equals(onlyFileName)) {
+						processEachFile(arrayLength, onlyFileName, fileExtension);
+					}
+					isOK = true;
 					break;
 				} catch (IOException e1) {
 					logger.log(Level.SEVERE, String.format("Retrying... %s", e.getMessage()), e);
@@ -91,11 +94,25 @@ public class FolderWatcher {
 				}
 				retryCount++;
 			}
-//			logger.log(Level.SEVERE, e.getMessage(), e);
+			if (!isOK) {
+				logger.log(Level.SEVERE, e.getMessage(), e);
+			}
 		}
 
 	}
 
+	/**
+	 * This will process each file and update word frequency.
+	 * 
+	 * @param arrayLength
+	 *            - this is word count.
+	 * @param onlyFileName
+	 *            - file name with extension, path not included.
+	 * @param fileExtension
+	 *            - file extension to be considered for processing.
+	 * @throws IOException
+	 *             - if file does not exist.
+	 */
 	private void processEachFile(int arrayLength, String onlyFileName, String fileExtension) throws IOException {
 		if (pattern.matcher(onlyFileName).find() && onlyFileName.endsWith(fileExtension)) {
 			try (BufferedReader bufferedLogReader = Files
