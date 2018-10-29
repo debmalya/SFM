@@ -29,12 +29,15 @@ public class SFMServiceImpl implements SFMService {
      */
     @Override
     public boolean isValidString(String word) {
+    	long startTime = System.currentTimeMillis();
         long[] timestamps = wordRegister24Hours.getWordRegister24HoursMap().get(word);
+        logger.log(Level.INFO, String.format("Time taken %d", System.currentTimeMillis() - startTime));
         long currentTimeStamp = System.currentTimeMillis();
         long oneDayBefore = currentTimeStamp - ONE_DAY_BEFORE;
 
         logger.log(Level.INFO,String.format("Before 24 hours %d", oneDayBefore));
         logger.log(Level.INFO,String.format("Word : %s and occurrences %s",word,Arrays.toString(timestamps)));
+        
 
         return (Arrays.stream(timestamps).parallel().anyMatch(timestamp -> timestamp < oneDayBefore));
 
