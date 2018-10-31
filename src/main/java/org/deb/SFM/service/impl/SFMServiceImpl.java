@@ -31,7 +31,7 @@ public class SFMServiceImpl implements SFMService {
     public boolean isValidString(String word) {
     	long startTime = System.currentTimeMillis();
         long[] timestamps = wordRegister24Hours.getWordRegister24HoursMap().get(word);
-        logger.log(Level.INFO, String.format("Time taken %d", System.currentTimeMillis() - startTime));
+        logger.log(Level.INFO, String.format("Time taken %d milliseconds", System.currentTimeMillis() - startTime));
         long currentTimeStamp = System.currentTimeMillis();
         long oneDayBefore = currentTimeStamp - ONE_DAY_BEFORE;
 

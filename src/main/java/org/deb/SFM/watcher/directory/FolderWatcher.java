@@ -121,26 +121,30 @@ public class FolderWatcher {
 				bufferedLogReader.lines().forEach(e -> {
 
 					String[] fieldValues = e.split(",");
-					long epochTimeStampMillis = Long.parseLong(fieldValues[0]);
+					try {
+						long epochTimeStampMillis = Long.parseLong(fieldValues[0]);
 
-					String[] words = fieldValues[1].split("\\s");
-					Arrays.stream(words).forEach(eachWord -> {
-						if (eachWord.length() > 0) {
-							long[] occurrences = wordRegister24Hours.getWordRegister24HoursMap().get(eachWord);
+						for (int i = 0; i < fieldValues.length; i++) {
 
-							for (int i = 0; i < occurrences.length - 1; i++) {
-								occurrences[i] = occurrences[i + 1];
-							}
+							String[] words = fieldValues[i].split("\\s");
+							Arrays.stream(words).forEach(eachWord -> {
+								if (eachWord.length() > 0) {
+									long[] occurrences = wordRegister24Hours.getWordRegister24HoursMap().get(eachWord);
 
-							occurrences[arrayLength] = epochTimeStampMillis;
+									for (int j = 0; j < occurrences.length - 1; j++) {
+										occurrences[j] = occurrences[j + 1];
+									}
 
-							wordRegister24Hours.getWordRegister24HoursMap().put(eachWord, occurrences);
-							// logger.log(Level.INFO, String.format("Word %s and
-							// occurrences %s", eachWord,
-							// Arrays.toString(occurrences)));
+									occurrences[arrayLength] = epochTimeStampMillis;
 
+									wordRegister24Hours.getWordRegister24HoursMap().put(eachWord, occurrences);
+
+								}
+							});
 						}
-					});
+					} catch (NumberFormatException nfe) {
+						logger.log(Level.SEVERE, String.format("'%s' is not a numeric value", fieldValues[0]));
+					}
 				});
 
 			}
