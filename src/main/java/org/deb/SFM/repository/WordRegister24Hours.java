@@ -26,6 +26,7 @@ public class WordRegister24Hours {
 			// as sync, flush, and close have to traverse all buffers. So larger size increment could speedup commit 
 			// and close operations. 
 			.allocateIncrement(512 * 1024 * 1024) // 512 MB
+			.cleanerHackEnable()
 			.make();
 
 	@Autowired
@@ -39,9 +40,10 @@ public class WordRegister24Hours {
 				// to load a value (new long[6] in this case) if the existing
 				// key is not found.
 				.valueLoader(s -> new long[configurationService.getWordCount() + 1])
-				.expireAfterCreate(24, TimeUnit.HOURS).expireAfterUpdate(24, TimeUnit.HOURS)
-				.expireAfterGet(24, TimeUnit.HOURS)
-				// Entry expiration in 3 background threds
+				.expireAfterCreate(24, TimeUnit.HOURS)
+				//.expireAfterUpdate(24, TimeUnit.HOURS)
+				//.expireAfterGet(24, TimeUnit.HOURS)
+				// Entry expiration in 3 background threads
 				.expireExecutor(Executors.newScheduledThreadPool(3))
 				// trigger space compact if 40% of space is free
 				.expireCompactThreshold(0.4).createOrOpen();
