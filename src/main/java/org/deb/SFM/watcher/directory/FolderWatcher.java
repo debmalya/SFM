@@ -138,6 +138,7 @@ public class FolderWatcher {
 									occurrences[arrayLength] = epochTimeStampMillis;
 
 									wordRegister24Hours.getWordRegister24HoursMap().put(eachWord, occurrences);
+									logger.log(Level.INFO,String.format("Word %s, occurrences %d",eachWord,occurrences[arrayLength]));
 
 								}
 							});
